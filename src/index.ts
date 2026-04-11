@@ -30,9 +30,31 @@ async function main(): Promise<void> {
 
   // Security
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+
+  // CORS allow-list:
+  //   - Exact origins from env.CORS_ORIGIN (comma-separated), with trailing
+  //     slashes normalised so `https://x.com` matches `https://x.com/`.
+  //   - Any *.onrender.com subdomain (safety net so the frontend Render URL
+  //     always works even if CORS_ORIGIN gets mis-typed).
+  //   - Tools without an Origin header (curl, mobile apps) are allowed
+  //     because there's no browser same-origin policy to enforce.
+  const allowList = new Set(
+    env.CORS_ORIGIN
+      .split(',')
+      .map((s) => s.trim().replace(/\/$/, ''))
+      .filter(Boolean)
+  );
   app.use(
     cors({
-      origin: env.CORS_ORIGIN.split(',').map((s) => s.trim()),
+      origin(origin, callback) {
+        if (!origin) return callback(null, true);
+        const normalised = origin.replace(/\/$/, '');
+        if (allowList.has(normalised)) return callback(null, true);
+        if (/^https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(normalised)) {
+          return callback(null, true);
+        }
+        return callback(null, false);
+      },
       credentials: true,
     })
   );
