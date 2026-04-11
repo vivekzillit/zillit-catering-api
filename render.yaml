@@ -19,7 +19,11 @@ services:
     runtime: node
     plan: free
     region: oregon
-    buildCommand: npm ci && npm run build
+    # --include=dev forces devDependencies (typescript, tsx, @types/*) to
+    # install during the build step even when NODE_ENV=production, which
+    # npm otherwise uses to skip them. Without this, `tsc` isn't on PATH
+    # and `npm run build` exits with status 2.
+    buildCommand: npm ci --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /health
     envVars:
