@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+.DS_Store
+*.log
+
+# Runtime uploads directory at the repo root (Render ephemeral storage).
+# Anchored path so the src/uploads/ source controller is NOT ignored.
+/uploads/

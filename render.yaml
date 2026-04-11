@@ -1,0 +1,39 @@
+# Render blueprint for the Zillit catering + craft service backend.
+#
+# Deploy flow:
+#   1. Commit this file to main and push.
+#   2. Render Dashboard → New → Blueprint → pick this repo.
+#   3. Paste the `sync: false` secrets when prompted (MONGO_URL, AES_KEY,
+#      AES_IV, CORS_ORIGIN). Leave CORS_ORIGIN blank until the frontend is
+#      deployed, then update it to the real static-site URL.
+#   4. JWT_SECRET is auto-generated on first deploy.
+#
+# Notes:
+#   - PORT is not declared here; Render injects it and `env.ts` reads it.
+#   - `trust proxy` is already enabled in src/index.ts so rate limiting +
+#     correct protocol detection work behind Render's proxy.
+#   - The free plan sleeps after 15 minutes of inactivity (cold-start ~10s).
+services:
+  - type: web
+    name: zillit-catering-api
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: AES_KEY
+        sync: false
+      - key: AES_IV
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: MODULEDATA_MAX_SKEW_MS
+        value: "300000"
