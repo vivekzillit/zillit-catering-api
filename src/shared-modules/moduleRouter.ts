@@ -38,6 +38,14 @@ import {
   updateComment,
   deleteComment,
 } from './controllers/comment.controller.js';
+import {
+  placeOrder,
+  listOrders,
+  myOrders,
+  updateOrderStatus,
+  orderSummary,
+  orderStats,
+} from './controllers/order.controller.js';
 
 export function moduleRouter(moduleId: ModuleId): Router {
   const router = Router();
@@ -76,6 +84,14 @@ export function moduleRouter(moduleId: ModuleId): Router {
   router.post('/chat/comments/:messageId', asyncHandler(createComment));
   router.put('/chat/comments/:messageId/:commentId', asyncHandler(updateComment));
   router.delete('/chat/comments/:messageId/:commentId', asyncHandler(deleteComment));
+
+  // --- Orders ---
+  router.post('/order', asyncHandler(placeOrder));
+  router.get('/order/my', asyncHandler(myOrders));
+  router.get('/order/summary/:unitId', requireRole('admin', 'caterer'), asyncHandler(orderSummary));
+  router.get('/order/stats/:unitId', requireRole('admin', 'caterer'), asyncHandler(orderStats));
+  router.get('/order', requireRole('admin', 'caterer'), asyncHandler(listOrders));
+  router.put('/order/:orderId/status', requireRole('admin', 'caterer'), asyncHandler(updateOrderStatus));
 
   return router;
 }
