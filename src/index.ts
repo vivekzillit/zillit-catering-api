@@ -17,6 +17,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { camelBodyMiddleware } from './middleware/camelBody.js';
 import { attachSocket } from './socket.js';
 import { sendSuccess } from './shared/response.js';
+import { directChatRouter } from './direct-chat/directChat.routes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -80,6 +81,8 @@ async function main(): Promise<void> {
   app.use('/api/v2/auth', authRouter);
   // Upload accepts multipart; leave untouched.
   app.use('/api/v2/upload', uploadRouter);
+  // Direct chat + contacts (not module-scoped).
+  app.use('/api/v2', camelBodyMiddleware, directChatRouter);
   // All module routes receive snake_case JSON bodies — camelize before
   // zod schemas see them so controllers stay idiomatic TypeScript.
   app.use('/api/v2/catering', camelBodyMiddleware, moduleRouter('catering'));
