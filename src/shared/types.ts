@@ -21,8 +21,11 @@ declare global {
         email: string;
         role: UserRole;
         adminAccess: boolean;
+        department?: string;
         deviceId?: string;
         projectId?: string;
+        phone?: string;
+        gsmPhone?: string;
       };
       moduleData?: {
         user_id: string;

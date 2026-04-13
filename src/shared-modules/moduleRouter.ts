@@ -17,6 +17,7 @@ import {
   listUnitMembers,
   createUnit,
   updateUnit,
+  deleteUnit,
 } from './controllers/unit.controller.js';
 import {
   listMenuItems,
@@ -55,6 +56,7 @@ export function moduleRouter(moduleId: ModuleId): Router {
   router.get('/unit/:unitId/members', asyncHandler(listUnitMembers));
   router.post('/unit', requireRole('admin', 'caterer'), asyncHandler(createUnit));
   router.put('/unit/:unitId', requireRole('admin', 'caterer'), asyncHandler(updateUnit));
+  router.delete('/unit/:unitId', requireRole('admin', 'caterer'), asyncHandler(deleteUnit));
 
   // --- Menu CRUD ---
   router.get('/menu/:unitId', asyncHandler(listMenuItems));

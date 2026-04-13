@@ -16,6 +16,8 @@ const userSchema = new Schema(
     deviceId: { type: String, default: '' }, // iOS identifierForVendor
     projectId: { type: String, default: '' },
     avatar: { type: String, default: '' },
+    phone: { type: String, default: '' },       // Zillit internal phone
+    gsmPhone: { type: String, default: '' },    // personal GSM number
   },
   { timestamps: true }
 );

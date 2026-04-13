@@ -17,6 +17,8 @@ const registerSchema = z.object({
   department: z.string().optional(),
   deviceId: z.string().optional(),
   projectId: z.string().optional(),
+  phone: z.string().optional(),
+  gsmPhone: z.string().optional(),
 });
 
 export async function register(req: Request, res: Response): Promise<void> {

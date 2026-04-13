@@ -46,7 +46,7 @@ export async function listUnitMembers(req: Request, res: Response): Promise<void
     : { projectId: req.user?.projectId ?? '' };
 
   const users = await User.find(filter)
-    .select('_id name role adminAccess avatar department email')
+    .select('_id name role adminAccess avatar department email phone gsmPhone')
     .lean();
 
   sendSuccess(res, users, 'unit_members_fetched');
@@ -90,4 +90,17 @@ export async function updateUnit(req: Request, res: Response): Promise<void> {
   ).lean();
   if (!unit) throw errors.notFound('unit');
   sendSuccess(res, unit, 'unit_updated');
+}
+
+/** DELETE /<m>/unit/:unitId — soft-delete (set enabled: false). */
+export async function deleteUnit(req: Request, res: Response): Promise<void> {
+  const moduleId = req.moduleId as ModuleId;
+  const { unitId } = req.params;
+  const unit = await Unit.findOneAndUpdate(
+    { _id: unitId, module: moduleId },
+    { enabled: false },
+    { new: true }
+  ).lean();
+  if (!unit) throw errors.notFound('unit');
+  sendSuccess(res, unit, 'unit_deleted');
 }

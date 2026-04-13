@@ -37,8 +37,11 @@ export async function authMiddleware(
     email: user.email,
     role: user.role,
     adminAccess: !!user.adminAccess,
+    department: user.department ?? '',
     deviceId: user.deviceId,
     projectId: user.projectId,
+    phone: user.phone ?? '',
+    gsmPhone: user.gsmPhone ?? '',
   };
   next();
 }
