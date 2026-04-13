@@ -18,6 +18,7 @@ import { camelBodyMiddleware } from './middleware/camelBody.js';
 import { attachSocket } from './socket.js';
 import { sendSuccess } from './shared/response.js';
 import { directChatRouter } from './direct-chat/directChat.routes.js';
+import { callsheetRouter } from './callsheet/callsheet.routes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -83,6 +84,8 @@ async function main(): Promise<void> {
   app.use('/api/v2/upload', uploadRouter);
   // Direct chat + contacts (not module-scoped).
   app.use('/api/v2', camelBodyMiddleware, directChatRouter);
+  // Call sheet PDF parsing (not module-scoped; multer handles the body).
+  app.use('/api/v2/callsheet', callsheetRouter);
   // All module routes receive snake_case JSON bodies — camelize before
   // zod schemas see them so controllers stay idiomatic TypeScript.
   app.use('/api/v2/catering', camelBodyMiddleware, moduleRouter('catering'));
