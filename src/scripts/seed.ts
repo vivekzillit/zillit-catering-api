@@ -8,15 +8,14 @@ import { User } from '../shared-modules/models/User.js';
 import { Unit } from '../shared-modules/models/Unit.js';
 
 const CATERING_UNITS = [
-  { unitName: 'breakfast_label', identifier: 'breakfast' },
-  { unitName: 'lunch_label', identifier: 'lunch' },
-  { unitName: 'dinner_label', identifier: 'dinner' },
+  { unitName: 'breakfast_label', identifier: 'breakfast', startTime: '06:00', endTime: '09:00' },
+  { unitName: 'lunch_label', identifier: 'lunch', startTime: '12:00', endTime: '14:00' },
+  { unitName: 'dinner_label', identifier: 'dinner', startTime: '18:00', endTime: '21:00' },
 ];
 
+// Craft service: single "Menu" unit — caterer adds custom units as needed.
 const CRAFTSERVICE_UNITS = [
-  { unitName: 'morning_label', identifier: 'morning' },
-  { unitName: 'afternoon_label', identifier: 'afternoon' },
-  { unitName: 'evening_label', identifier: 'evening' },
+  { unitName: 'menu_label', identifier: 'menu', startTime: '', endTime: '' },
 ];
 
 async function main(): Promise<void> {
@@ -93,7 +92,7 @@ async function main(): Promise<void> {
     );
   }
 
-  console.log('[seed] units seeded: 3 catering, 3 craft service');
+  console.log(`[seed] units seeded: ${CATERING_UNITS.length} catering, ${CRAFTSERVICE_UNITS.length} craft service`);
 
   await mongoose.disconnect();
   console.log('[seed] done');
