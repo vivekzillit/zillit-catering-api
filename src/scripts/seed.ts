@@ -37,6 +37,8 @@ async function main(): Promise<void> {
       department: 'Catering',
       deviceId: 'C4150FA3-105F-4276-A21C-65AD79B5EB28',
       projectId: '67f4c341d7b27a11acf84d57',
+      phone: '+1-555-0100',
+      gsmPhone: '+44-7717-650812',
     },
     { upsert: true, new: true, setDefaultsOnInsert: true }
   );
@@ -52,6 +54,8 @@ async function main(): Promise<void> {
       department: 'Production',
       deviceId: '7B3C0B33-A74E-49EB-B56A-2C6E9E02F41A',
       projectId: '67f4c341d7b27a11acf84d57',
+      phone: '+1-555-0200',
+      gsmPhone: '+44-7508-897772',
     },
     { upsert: true, new: true, setDefaultsOnInsert: true }
   );
