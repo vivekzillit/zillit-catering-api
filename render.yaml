@@ -23,7 +23,8 @@ services:
     # install during the build step even when NODE_ENV=production, which
     # npm otherwise uses to skip them. Without this, `tsc` isn't on PATH
     # and `npm run build` exits with status 2.
-    buildCommand: npm ci --include=dev && npm run build
+    # Install poppler-utils for call sheet PDF text extraction, then build.
+    buildCommand: apt-get update -qq && apt-get install -y -qq poppler-utils > /dev/null 2>&1 || true && npm ci --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /health
     envVars:

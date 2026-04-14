@@ -20,9 +20,13 @@ export function moduleDataMiddleware(
 ): void {
   const hex = req.header('moduledata');
   if (!hex) {
-    // In dev we allow missing moduledata so tests can curl endpoints
-    // without implementing the crypto locally. In production it's required.
-    if (env.NODE_ENV !== 'production') return next();
+    // Web clients (device-type: Web) authenticate via JWT only and may not
+    // have a valid iOS deviceId to generate moduledata. Allow them through.
+    // iOS clients always send moduledata; its absence there is still an
+    // error, but we can't distinguish reliably, so we relax this to allow
+    // missing moduledata when an Authorization header is present.
+    const hasAuth = !!req.header('authorization');
+    if (env.NODE_ENV !== 'production' || hasAuth) return next();
     return next(errors.invalidModuledata());
   }
 

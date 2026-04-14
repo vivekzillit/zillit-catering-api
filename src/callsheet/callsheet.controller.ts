@@ -92,6 +92,27 @@ export async function parseCallSheet(req: Request, res: Response): Promise<void>
   sendSuccess(res, { ...doc.toObject(), syncedUnits }, 'callsheet_parsed', 201);
 }
 
+/** POST /api/v2/callsheet/manual — create a call sheet from manually entered data (no PDF). */
+export async function createManualCallSheet(req: Request, res: Response): Promise<void> {
+  const body = req.body as Record<string, unknown>;
+  const doc = await CallSheetData.create({
+    projectId: req.user?.projectId ?? '',
+    shootDay: body.shootDay ?? 0,
+    date: body.date ?? '',
+    productionName: body.productionName ?? '',
+    meals: body.meals ?? [],
+    wrapTime: body.wrapTime ?? '',
+    unitCall: body.unitCall ?? '',
+    estimatedHeadcount: body.estimatedHeadcount ?? 0,
+    cateringBase: body.cateringBase ?? '',
+    crewContacts: [],
+    rawText: '',
+    sourceFileName: 'manual_entry',
+    created: Date.now(),
+  });
+  sendSuccess(res, doc.toObject(), 'callsheet_created', 201);
+}
+
 export async function getLatestCallSheet(req: Request, res: Response): Promise<void> {
   const projectId = req.user?.projectId;
   if (!projectId) {
