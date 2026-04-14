@@ -11,6 +11,7 @@ import type { Request, Response } from 'express';
 import multer from 'multer';
 import { z } from 'zod';
 import { CallSheetData } from './models/CallSheetData.js';
+import { Unit } from '../shared-modules/models/Unit.js';
 import { sendSuccess } from '../shared/response.js';
 import { errors } from '../shared/errors.js';
 import { parseCallSheetText } from './parser.js';
@@ -58,7 +59,37 @@ export async function parseCallSheet(req: Request, res: Response): Promise<void>
     created: Date.now(),
   });
 
-  sendSuccess(res, doc.toObject(), 'callsheet_parsed', 201);
+  // Auto-sync parsed meal times to matching catering units so the unit
+  // tabs display the correct serving window.
+  const syncedUnits: string[] = [];
+  if (parsed.meals.length > 0 && req.user?.projectId) {
+    const mealTypeToUnit: Record<string, string> = {
+      breakfast: 'breakfast',
+      lunch: 'lunch',
+      dinner: 'dinner',
+      craft_service: 'craft',
+    };
+    for (const meal of parsed.meals) {
+      const keyword = mealTypeToUnit[meal.type] ?? meal.type;
+      // Match by unit name containing the meal keyword (case-insensitive)
+      const unit = await Unit.findOneAndUpdate(
+        {
+          projectId: req.user.projectId,
+          enabled: true,
+          unitName: { $regex: keyword, $options: 'i' },
+        },
+        {
+          startTime: meal.startTime,
+          endTime: meal.endTime,
+          servingLocation: meal.location || undefined,
+        },
+        { new: true }
+      );
+      if (unit) syncedUnits.push(`${unit.unitName}: ${meal.startTime}-${meal.endTime}`);
+    }
+  }
+
+  sendSuccess(res, { ...doc.toObject(), syncedUnits }, 'callsheet_parsed', 201);
 }
 
 export async function getLatestCallSheet(req: Request, res: Response): Promise<void> {

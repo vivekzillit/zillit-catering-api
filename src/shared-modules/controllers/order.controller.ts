@@ -16,6 +16,7 @@ import { errors } from '../../shared/errors.js';
 import type { ModuleId } from '../../shared/types.js';
 import { emitChatEvent, emitToUser } from '../../socket.js';
 import { toSnakeCase } from '../../shared/wireFormat.js';
+import { Notification } from '../models/Notification.js';
 
 // VIP departments / roles — orders from these get priority: 'vip'
 const VIP_ROLES = new Set(['admin', 'caterer']);
@@ -154,6 +155,25 @@ export async function updateOrderStatus(req: Request, res: Response): Promise<vo
   emitChatEvent(moduleId, String(doc.unitId), 'order:status' as 'chat:update', plain);
   // Notify the orderer directly (for "ready" notification)
   emitToUser(moduleId, String(doc.userId), 'order:status' as 'chat:update', plain);
+
+  // When order is marked "ready", create a persistent notification for the
+  // orderer and emit a real-time notification event so the bell + toast fire.
+  if (parsed.data.status === 'ready') {
+    try {
+      const notif = await Notification.create({
+        userId: doc.userId,
+        type: 'order_ready',
+        title: 'Your order is ready!',
+        body: `Your order from ${doc.userName ? '' : ''}${doc.items.map((i) => i.name).join(', ')} is ready for pickup.`,
+        orderId: doc._id,
+        read: false,
+        created: now,
+      });
+      emitToUser(moduleId, String(doc.userId), 'notification:new' as 'chat:new', toSnakeCase(notif.toObject()));
+    } catch (err) {
+      console.error('Failed to create ready notification', err);
+    }
+  }
 
   sendSuccess(res, doc, 'order_status_updated');
 }

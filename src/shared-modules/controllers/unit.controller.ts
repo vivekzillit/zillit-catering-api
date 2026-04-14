@@ -57,6 +57,9 @@ const createSchema = z.object({
   identifier: z.string().optional(),
   privateUnit: z.boolean().optional(),
   systemDefined: z.boolean().optional(),
+  startTime: z.string().optional(),         // "08:00"
+  endTime: z.string().optional(),           // "09:00"
+  servingLocation: z.string().optional(),   // "Car/Catering Base"
 });
 
 export async function createUnit(req: Request, res: Response): Promise<void> {

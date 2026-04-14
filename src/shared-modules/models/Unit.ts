@@ -28,6 +28,9 @@ const unitSchema = new Schema(
     hasDownloadAccess: { type: Boolean, default: true },
     isUnitHead: { type: Boolean, default: false },
     systemDefined: { type: Boolean, default: false },
+    startTime: { type: String, default: '' },          // "08:00"
+    endTime: { type: String, default: '' },            // "09:00"
+    servingLocation: { type: String, default: '' },    // "Car/Catering Base"
     teamMembers: { type: [teamMemberSchema], default: [] },
   },
   { timestamps: true }

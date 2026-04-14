@@ -46,6 +46,11 @@ import {
   orderSummary,
   orderStats,
 } from './controllers/order.controller.js';
+import {
+  listNotifications,
+  markRead,
+  markAllRead,
+} from './controllers/notification.controller.js';
 
 export function moduleRouter(moduleId: ModuleId): Router {
   const router = Router();
@@ -92,6 +97,11 @@ export function moduleRouter(moduleId: ModuleId): Router {
   router.get('/order/stats/:unitId', requireRole('admin', 'caterer'), asyncHandler(orderStats));
   router.get('/order', requireRole('admin', 'caterer'), asyncHandler(listOrders));
   router.put('/order/:orderId/status', requireRole('admin', 'caterer'), asyncHandler(updateOrderStatus));
+
+  // --- Notifications ---
+  router.get('/notifications', asyncHandler(listNotifications));
+  router.put('/notifications/read-all', asyncHandler(markAllRead));
+  router.put('/notifications/:notifId/read', asyncHandler(markRead));
 
   return router;
 }
